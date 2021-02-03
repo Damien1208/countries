@@ -5,3 +5,7 @@ body {
 ul {
   list-style-type: none;
 }
+
+.bg {
+  background-color: gray;
+}

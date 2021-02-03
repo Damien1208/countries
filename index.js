@@ -13,7 +13,7 @@ $(function () {
     <div class="input-group">
       <input type="search" id="search-input" class="form-control rounded" placeholder="Search" aria-label="Search"
         aria-describedby="search-addon" />
-      <button type="button" class="btn btn-danger rounded-pill ml-2 d-none d-sm-flex" id="search-button">search</button>
+      <button type="button" class="btn btn-danger rounded-pill ml-2 d-none d-md-flex" id="search-button">search</button>
     </div>
     `;
     document.getElementById("app").append(searchBar);
@@ -46,8 +46,8 @@ $(function () {
         array.forEach(function (item) {
             var a = $('<a>').html(` 
             <div class="card text-left pl-4 py-2" style="width: auto; margin: 0.5rem;">
-            <p class="card-title">${item.alpha3Code}</p>
-            <h4 class="card-text">${item.name}</h4>
+                <p class="card-title">${item.alpha3Code}</p>
+                <h4 class="card-text">${item.name}</h4>
             </div>
             `)
             let list = $('<li>');
@@ -58,6 +58,10 @@ $(function () {
             a.on('click', clickTag)
         })
 
+        $(".list-group li .card").click(function (e) {
+            $(".list-group li .card").removeClass('bg')
+            $(this).addClass('bg')
+        });
     }
 
     var clickTag = function (e) {
@@ -67,27 +71,28 @@ $(function () {
         countryCard(tag)
     }
 
+
     function countryCard(country) {
-console.log(country)
+
         const countryDetail = document.createElement('div')
         countryDetail.className = 'country'
         countryDetail.innerHTML = `
-        <h5 class="text-center card-title">${country.name}</h5>
-        <img src="${country.flag}"   class="card-img-top" />
-        <div class="mt-4">
-        <p>Nom natif : ${country.nativeName}</p>
-        <p>Capitale : ${country.capital}</p>
-        <p>Population : ${country.population} habitants</p>
-        <p class="mb-0">Langue(s) officielle(s) :</p>
+            <h5 class="text-center card-title">${country.name}</h5>
+            <img src="${country.flag}"   class="card-img-top" />
+            <div class="mt-4">
+            <p>Nom natif : ${country.nativeName}</p>
+            <p>Capitale : ${country.capital}</p>
+            <p>Population : ${country.population} habitants</p>
+            <p class="mb-0">Langue(s) officielle(s) :</p>
         `
-   
+
         breakArray(country.languages, 'name');
         bringLabel("Monnaie(s) officielle(s) :");
         breakArray(country.currencies, 'name');
         bringLabel("Timezones: ");
         breakArray(country.timezones, '');
         bringLabel("Pays voisins: ");
-      
+
         country.borders.forEach(code => {
             const url = `https://restcountries.eu/rest/v2/alpha/${code}`
             fetch(url).then(response => response.json()).then(country => country.name).then(name => {
@@ -96,7 +101,7 @@ console.log(country)
                 return countryDetail.appendChild(liElement);
             })
         })
-    
+
         function breakArray(arr, key) {
             arr.forEach(el => {
                 var liElement = document.createElement('span');
