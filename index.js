@@ -24,6 +24,11 @@ $(function () {
         search = searchInput.value;
         getList()
     });
+    searchButton.addEventListener('click', () => {
+        search = searchInput.value;
+        getList()
+    });
+
 
 
     function getList() {
