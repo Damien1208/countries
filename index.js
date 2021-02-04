@@ -1,25 +1,16 @@
+import { searchBar, searchButton, searchInput } from "./searchBar.js";
+
 $(function () {
     const url = "https://restcountries.eu/rest/v2/all";
-    let countriesList;
+    let countriesList = [];
     let search = "";
 
     fetch(url)
         .then((response) => response.json())
-        .then((countries) => countriesList = countries).then(() => getList());
+        .then((countries) => countries.forEach(country => countriesList.push({ code: `${country.alpha3Code}`, name: `${country.name}` })))
+        .then(() => getList());
 
-
-    const searchBar = document.createElement('div')
-    searchBar.innerHTML = `
-    <div class="input-group">
-      <input type="search" id="search-input" class="form-control rounded" placeholder="Search" aria-label="Search"
-        aria-describedby="search-addon" />
-      <button type="button" class="btn btn-danger rounded-pill ml-2 d-none d-md-flex" id="search-button">search</button>
-    </div>
-    `;
-    document.getElementById("app").append(searchBar);
-
-    const searchButton = document.getElementById('search-button');
-    const searchInput = document.getElementById('search-input');
+    searchBar;
     searchInput.addEventListener('keyup', () => {
         search = searchInput.value;
         getList()
@@ -33,10 +24,15 @@ $(function () {
 
     function getList() {
         if (!!countriesList) {
+            document.getElementById('countries').innerHTML = [];
             if (search.length) {
-                const list = countriesList.filter(country => country.name.toLowerCase().includes(search.toLowerCase()));
-                document.getElementById('countries').innerHTML = [];
-                createList(list);
+                const url = `https://restcountries.eu/rest/v2/name/${search}`;
+                const list = [];
+
+                fetch(url)
+                .then(response => response.json())
+                .then(countries => countries.forEach(country => list.push({ code: `${country.alpha3Code}`, name: `${country.name}` })))
+                .then(() => createList(list));
             } else {
                 createList(countriesList);
             }
@@ -46,12 +42,12 @@ $(function () {
 
 
     function createList(array) {
-        var listCountries = document.getElementById('countries')
+        const listCountries = document.getElementById('countries')
 
         array.forEach(function (item) {
             var a = $('<a>').html(` 
             <div class="card text-left pl-4 py-2" style="width: auto; margin: 0.5rem;">
-                <p class="card-title">${item.alpha3Code}</p>
+                <p class="card-title">${item.code}</p>
                 <h4 class="card-text">${item.name}</h4>
             </div>
             `)
@@ -70,10 +66,12 @@ $(function () {
     }
 
     var clickTag = function (e) {
-        var link = $(e.currentTarget);
-        var tag = link.data('item')
-        $(".country").detach()
-        countryCard(tag)
+        const link = $(e.currentTarget);
+        const tag = link.data('item');
+        const url = `https://restcountries.eu/rest/v2/name/${tag.name}`;
+
+        $(".country").detach();
+        fetch(url).then(response => response.json()).then(country => countryCard(country[0]));
     }
 
 
